@@ -75,4 +75,3 @@ public class Person {
         && Objects.equals(role, person.role);
   }
 }
-
