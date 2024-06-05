@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
 /**
  * The type Auth controller.
  */
@@ -43,7 +42,7 @@ public class AuthController {
       String token = authenticationService.authenticate(username, password);
       return ResponseEntity.ok(Map.of("token", token));
     } catch (RuntimeException e) {
-      return ResponseEntity.status(403).build();
+      return ResponseEntity.status(403).body(Map.of("error", e.getMessage()));
     }
   }
 }

@@ -16,7 +16,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-
 /**
  * The type Authentication service.
  */
@@ -57,8 +56,8 @@ public class AuthenticationService {
         .setClaims(claims)
         .setSubject(authentication.getName())
         .setIssuedAt(new Date(System.currentTimeMillis()))
-        .setExpiration(
-            new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hours expiration
+        .setExpiration(new Date(
+            System.currentTimeMillis() + 1000 * 60 * 60 * 10))
         .signWith(SignatureAlgorithm.HS256, secretKey)
         .compact();
   }

@@ -1,5 +1,7 @@
 package com.betrybe.agrix.ebytr.staff.security;
 
+import com.betrybe.agrix.ebytr.staff.service.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -7,6 +9,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 /**
  * The type Security config.
@@ -14,6 +17,18 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
+  private final CustomUserDetailsService userDetailsService;
+
+  /**
+   * Instantiates a new Security config.
+   *
+   * @param userDetailsService the user details service
+   */
+  @Autowired
+  public SecurityConfig(CustomUserDetailsService userDetailsService) {
+    this.userDetailsService = userDetailsService;
+  }
 
   /**
    * Security filter chain security filter chain.
@@ -27,10 +42,15 @@ public class SecurityConfig {
     http
         .csrf(csrf -> csrf.disable())
         .authorizeHttpRequests(authorize -> authorize
-            .requestMatchers("/persons").permitAll()
             .requestMatchers("/auth/login").permitAll()
+            .requestMatchers("/persons").permitAll()
+            .requestMatchers("/farms").hasAnyRole("USER", "MANAGER", "ADMIN")
+            .requestMatchers("/crops").hasAnyRole("MANAGER", "ADMIN")
+            .requestMatchers("/fertilizers").hasRole("ADMIN")
             .anyRequest().authenticated()
-        );
+        )
+        .addFilterBefore(new JwtAuthenticationFilter(
+            userDetailsService), UsernamePasswordAuthenticationFilter.class);
     return http.build();
   }
 
